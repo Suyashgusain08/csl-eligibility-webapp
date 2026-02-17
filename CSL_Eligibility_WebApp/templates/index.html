@@ -2,40 +2,194 @@
 <html>
 <head>
     <title>CSL Eligibility Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f6fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f4e79;
+            margin-bottom: 25px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+            color: #333;
+        }
+
+        input {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1f4e79;
+            box-shadow: 0px 0px 6px rgba(31,78,121,0.3);
+        }
+
+        .btn {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background: #1f4e79;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #163a5c;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+
+        .result h2 {
+            margin-top: 0;
+            color: #1f4e79;
+        }
+
+        .eligible {
+            color: green;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .noteligible {
+            color: red;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .row span {
+            font-weight: bold;
+        }
+
+        @media(max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            input {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body style="font-family: Arial; margin: 40px;">
 
-<h2>CSL Finance - Eligibility Calculator</h2>
+<body>
+    <div class="container">
+        <div class="card">
 
-<form method="POST">
-    <input type="number" step="0.01" name="income" placeholder="Monthly Income" required><br><br>
-    <input type="number" step="0.01" name="existing_emi" placeholder="Existing EMI" required><br><br>
-    <input type="number" step="0.01" name="loan_amount" placeholder="Loan Amount" required><br><br>
-    <input type="number" step="0.01" name="roi" placeholder="ROI (%)" required><br><br>
-    <input type="number" name="tenure" placeholder="Tenure (Years)" required><br><br>
-    <input type="number" step="0.01" name="property_value" placeholder="Property Value" required><br><br>
-    <input type="number" step="0.01" name="foir" placeholder="FOIR (%)" value="60" required><br><br>
-    <input type="number" step="0.01" name="max_ltv" placeholder="Max LTV (%)" value="70" required><br><br>
-    <input type="number" name="cibil" placeholder="CIBIL Score" required><br><br>
+            <h1>CSL Finance - Eligibility Calculator</h1>
 
-    <button type="submit">Check Eligibility</button>
-</form>
+            <form method="POST">
+                <div class="grid">
 
-{% if result %}
-<hr>
-<h3>Result</h3>
-<p><b>FOIR Allowed EMI:</b> ₹{{ result.foir_allowed_emi }}</p>
-<p><b>Proposed EMI:</b> ₹{{ result.proposed_emi }}</p>
-<p><b>Surplus/Deficit EMI:</b> ₹{{ result.surplus }}</p>
-<p><b>LTV %:</b> {{ result.ltv }}%</p>
-<p><b>Max Loan (FOIR):</b> ₹{{ result.max_loan_foir }}</p>
-<p><b>Max Loan (LTV):</b> ₹{{ result.max_loan_ltv }}</p>
-<p><b>Final Max Loan:</b> ₹{{ result.final_max_loan }}</p>
+                    <div>
+                        <label>Monthly Income (₹)</label>
+                        <input type="number" step="0.01" name="income" required>
 
-<h2 style="color:{% if result.status=='ELIGIBLE' %}green{% else %}red{% endif %};">
-Eligibility Status: {{ result.status }}
-</h2>
-{% endif %}
+                        <label>Existing EMI (₹)</label>
+                        <input type="number" step="0.01" name="existing_emi" required>
 
+                        <label>Proposed Loan Amount (₹)</label>
+                        <input type="number" step="0.01" name="loan_amount" required>
+
+                        <label>ROI (%)</label>
+                        <input type="number" step="0.01" name="roi" required>
+
+                        <label>Tenure (Years)</label>
+                        <input type="number" name="tenure" required>
+                    </div>
+
+                    <div>
+                        <label>Property Value (₹)</label>
+                        <input type="number" step="0.01" name="property_value" required>
+
+                        <label>FOIR Limit (%)</label>
+                        <input type="number" step="0.01" name="foir" value="60" required>
+
+                        <label>Max LTV Allowed (%)</label>
+                        <input type="number" step="0.01" name="max_ltv" value="70" required>
+
+                        <label>CIBIL Score</label>
+                        <input type="number" name="cibil" required>
+                    </div>
+
+                </div>
+
+                <button class="btn" type="submit">Check Eligibility</button>
+            </form>
+
+            {% if result %}
+            <div class="result">
+                <h2>Eligibility Result</h2>
+
+                <div class="row"><div>FOIR Allowed EMI</div><span>₹{{ result.foir_allowed_emi }}</span></div>
+                <div class="row"><div>Proposed EMI</div><span>₹{{ result.proposed_emi }}</span></div>
+                <div class="row"><div>Surplus / Deficit EMI</div><span>₹{{ result.surplus }}</span></div>
+                <div class="row"><div>LTV %</div><span>{{ result.ltv }}%</span></div>
+                <div class="row"><div>Max Loan (FOIR)</div><span>₹{{ result.max_loan_foir }}</span></div>
+                <div class="row"><div>Max Loan (LTV)</div><span>₹{{ result.max_loan_ltv }}</span></div>
+                <div class="row"><div>Final Max Loan</div><span>₹{{ result.final_max_loan }}</span></div>
+
+                <br>
+                <p class="{% if result.status == 'ELIGIBLE' %}eligible{% else %}noteligible{% endif %}">
+                    Eligibility Status: {{ result.status }}
+                </p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
 </body>
 </html>
